@@ -1,0 +1,29 @@
+[Unit]
+Description=Bot pessoal de finanças no Telegram
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=finance-bot
+Group=finance-bot
+WorkingDirectory=/var/lib/finance-bot
+EnvironmentFile=/etc/finance-bot/finance-bot.env
+ExecStart=/opt/finance-bot/finance-bot
+Restart=on-failure
+RestartSec=10s
+TimeoutStopSec=45s
+KillSignal=SIGTERM
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/finance-bot
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+[Install]
+WantedBy=multi-user.target
