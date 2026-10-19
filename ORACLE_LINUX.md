@@ -229,6 +229,17 @@ sudo systemctl is-active finance-bot.service
 
 O verificador deve informar `OK`; os outros comandos, `enabled` e `active`. Você pode encerrar o SSH com `exit`: o serviço continua executando.
 
+Se o verificador disser que o arquivo não existe ou não pode ser acessado, `active` por si só não confirma o caminho usado pelo banco. Execute somente o diagnóstico abaixo antes de criar, mover ou substituir arquivos:
+
+```sh
+sudo journalctl -u finance-bot.service -n 30 --no-pager
+sudo grep -nE '^[[:space:]]*DATABASE_PATH[[:space:]]*=' /etc/finance-bot/finance-bot.env
+sudo find /var/lib/finance-bot -maxdepth 3 -type f -name '*.db' -printf '%u:%g %m %p\n'
+sudo -u finance-bot stat /var/lib/finance-bot/finance.db
+```
+
+Com a unit fornecida, `WorkingDirectory=/var/lib/finance-bot`. Se `DATABASE_PATH` estiver ausente ou com `./data/finance.db`, o caminho usado será `/var/lib/finance-bot/data/finance.db`, diferente do caminho do comando de verificação acima. Localize o banco original e confirme o erro antes de alterar a configuração, para não passar a usar outro banco vazio. A mensagem genérica do dbtool inicial também podia indicar falta de permissão; versões atualizadas distinguem essas condições. Não compartilhe o conteúdo completo do arquivo de ambiente.
+
 ## Etapa 17 — Fazer backup e guardar fora da VM
 
 Na VM:
